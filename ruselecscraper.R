@@ -75,26 +75,31 @@ api.extracting <- function(links){
   tvds <- sub(".*&tvd=([0-9]*)&.*","\\1", links, perl = TRUE)
   vibids <- sub(".*&vibid=([0-9]*)&.*","\\1", links, perl = TRUE)
   types <- sub(".*&type=([0-9]*).*", "\\1", links, perl = TRUE)
+  global <- sub(".*global=([a-z0-9]*)&.*","\\1", links, perl = TRUE)
+  region <- sub(".*&region=([0-9]*).*", "\\1", links, perl = TRUE)
+  sub_region <- sub(".*&sub_region=([0-9]*).*", "\\1", links, perl = TRUE)
   
-  return(list(roots = roots,vrns = vrns,tvds = tvds, vibids = vibids, types = types))
+  return(list(roots = roots,vrns = vrns,tvds = tvds, vibids = vibids, types = types,
+              global = global, region = region, sub_region = sub_region))
   
 }
 
-api.caller <- function(roots, vrns, tvds, vibids, type, filenames, api_link){
+api.caller <- function(roots, vrns, tvds, vibids, type, global, region, sub_region,
+                       filenames, api_link){
   
   stopifnot(is.character(filenames), is.character(type), is.character(api_link))
   
   api_url <- paste0(api_link, "servlet/ExcelReportVersion")
   
-  Sys.sleep(10)
+  Sys.sleep(5)
   
   httr::GET(
     url = api_url,
     query = list(
-      region="76",
-      sub_region="76",
+      region=region,
+      sub_region=sub_region,
       root=roots,
-      global="true",
+      global=global,
       vrn=vrns,
       tvd=tvds,
       type=type,
@@ -278,7 +283,7 @@ file.name.generating <- function(filename){
 
 
 candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encoding
-  
+
   #safety check
   library(rvest)
   stopifnot(is.character(base_link))
@@ -318,6 +323,9 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
                       tvds = api_variables$tvds,
                       vibids = api_variables$vibids,
                       type = api_variables$types,
+                      global = api_variables$global,
+                      region = api_variables$region,
+                      sub_region = api_variables$sub_region,
                       filenames = filename,
                       api_link = api_link)
   
