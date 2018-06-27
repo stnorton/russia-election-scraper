@@ -96,7 +96,7 @@ api.caller <- function(roots, vrns, tvds, vibids, type, global, region, sub_regi
   httr::GET(
     url = api_url,
     query = list(
-      region=region,
+      region = region,
       sub_region=sub_region,
       root=roots,
       global=global,
@@ -196,6 +196,9 @@ russian.election.scraping <- function(base_link, api_link, ...){
                 tvds = api_variables$tvds,
                 vibids = api_variables$vibids,
                 type = api_variables$types,
+                global = api_variables$global,
+                region = api_variables$region,
+                sub_region = api_variables$sub_region,
                 filenames =  filenames,
                 api_link = api_link)
   
