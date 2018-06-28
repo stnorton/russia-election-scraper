@@ -1,4 +1,4 @@
-# russia-election-scraper
+﻿# russia-election-scraper
 Scraper for Russian election data at the poll level
 
 Last update: 25 June 2018
@@ -31,7 +31,7 @@ However, there are still issues with certain types of elections:
 * Certain cities report mayoral elections directly at the precinct level. This is only an issue if you want to avoid having a seperate spreadsheet for each polling station.
 * Any election where the table of disaggregated results is not the last link on the page. This could mostly be worked around in a similar way to the Duma elections by telling the scraper to pull links with the text "Сводная таблица", but some elections use different texts. I am currently attempting to find a way to work around this.
 See the example code for a work-around for Duma 2003 elections. Code can easily be modified to select different nodes if the formatting is idiosyncratic.
-
+* Occassionally, API calls do not use all the variables specified in the URL. If you run into consistent issues, use Burp Suite to determine the call
 
 # Crediting the Author
 

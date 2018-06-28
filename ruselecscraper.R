@@ -305,8 +305,8 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
       html_text()
   }
   
-  if(nchar(name) > 100){
-    name <- substring(name, first = 1, last = 100)
+  if(nchar(name) > 68){
+    name <- substring(name, first = 1, last = 68)
   }
   
   name <- paste("candidates", name, sep = " ")
