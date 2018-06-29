@@ -46,4 +46,7 @@ Contact details:
 
 Please report any bugs and suggested fixes in the "Issues" tab. Feel free to clone the repo and make improvements. I would appreciate it if you contacted me with any signficant improvements, as I use this scraper very frequently!
 
+# Known bugs
 
+* When a `vibid` isn't present in a url, the function `api.extracting` returns the entire url. I am working on a way to recognize this and drop vibid from the result.
+* When there is no data for an election, the scraper cannot recognize this and crashes when it reaches the `api.caller` function 
