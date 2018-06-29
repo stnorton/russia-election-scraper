@@ -91,7 +91,7 @@ api.caller <- function(roots, vrns, tvds, vibids, type, global, region, sub_regi
   
   api_url <- paste0(api_link, "servlet/ExcelReportVersion")
   
-  Sys.sleep(5)
+  Sys.sleep(10)
   
   httr::GET(
     url = api_url,
@@ -114,6 +114,7 @@ api.caller <- function(roots, vrns, tvds, vibids, type, global, region, sub_regi
     verbose()
   ) -> res
 }
+safe.api.caller <- Safely(api.caller)
 
 result.link.extracting <- function(link,...){
   #extracting links to results - exploits fact that last link is always the
@@ -166,10 +167,12 @@ russian.election.scraping <- function(base_link, api_link, ...){
       html_text()
   }
   
-  if(nchar(name) > 68){
-    name <- substring(name, first = 1, last = 68)
+  if(nchar(name) > 60){
+    name <- substring(name, first = 1, last = 60)
   }
   
+  name <- gsub("[[:punct:]]", " ", name)
+  name <- trimws(name, which = "right")
   
   name <- dir.name.generating(name)
   
@@ -206,6 +209,8 @@ russian.election.scraping <- function(base_link, api_link, ...){
   return(res)
   
 }
+
+safe.russian.election.scraping <- Safely(russian.election.scraping)
 
 ##for elections with mixed systems - use node argument to select which set of 
 #results you want
@@ -321,16 +326,17 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
   #api variables
   api_variables <- api.extracting(candidate_link)
   
-  check <- api.caller(roots = api_variables$roots,
-                      vrns = api_variables$vrns,
-                      tvds = api_variables$tvds,
-                      vibids = api_variables$vibids,
-                      type = api_variables$types,
-                      global = api_variables$global,
-                      region = api_variables$region,
-                      sub_region = api_variables$sub_region,
-                      filenames = filename,
-                      api_link = api_link)
+  check <- safe.api.caller(roots = api_variables$roots,
+                          vrns = api_variables$vrns,
+                          tvds = api_variables$tvds,
+                          vibids = api_variables$vibids,
+                          type = api_variables$types,
+                          global = api_variables$global,
+                          region = api_variables$region,
+                          sub_region = api_variables$sub_region,
+                          filenames = filename,
+                          api_link = api_link)
   
 }
 
+safe.candidate.scraper <- Safely(candidate.scraper)

@@ -19,6 +19,7 @@ The basic work flow for scraping is as follows:
 2. Use RSelenium (or rvest in session mode) to navigate the search boxes on the site and pull the links to the desired election. See example code to see this in action.
 3. Determine if any election pages are idiosyncratically formatted (see Problems with Certain Elections)
 4. Remove problematic elections from list of links, scrape them seperately if desired (see example code).
+	* I reccomend using lapply() with the safe scraping functions - if the scraping fails, it will reutrn a null list entry corresponding to the index for the link at which it failed
 5. If candidate data is desired, use the candidate scraper
 6. Clean data and analyze away!
 

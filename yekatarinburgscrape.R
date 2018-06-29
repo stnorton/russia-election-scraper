@@ -136,19 +136,16 @@ check <- mapply(api.caller, roots = api_variables$roots, vrns = api_variables$vr
 #removing the duma 2003 and last election, as it won't happen until Sep 2018
 link_urls <- link_urls[-c(1,18)]
 
-check <- sapply(X = link_urls, FUN = russian.election.scraping,
+check <- lapply(X = link_urls, FUN = safe.russian.election.scraping,
                 api_link = "http://www.sverdlovsk.vybory.izbirkom.ru/",
                 encoding = "windows-1251")
 ##failed at head of city elections
 ##decided to skip this election because it is also formatted differently - will
 ## download manually as it's only one spreadsheet
-check <- sapply(X = link_urls[7:16], FUN = russian.election.scraping,
+check <- lapply(X = link_urls[7:16], FUN = safe.russian.election.scraping,
                 api_link = "http://www.sverdlovsk.vybory.izbirkom.ru/",
                 encoding = "windows-1251")
-#failed again at presidential election
-check <- sapply(X = link_urls[16], FUN = russian.election.scraping,
-                api_link = "http://www.sverdlovsk.vybory.izbirkom.ru/",
-                encoding = "windows-1251")
+
 
 ##manual download for the mayor election wouldn't work - downloading sheets
 # at uik level - will take a while
@@ -170,7 +167,7 @@ candidate_base_urls <- candidate_base_urls[-state_duma]
 candidate_base_urls <- candidate_base_urls[-13] #election hasn't happened yet
 
 ##Running the scraper
-check <- sapply(X = candidate_base_urls, FUN = candidate.scraper,
+check <- lapply(X = candidate_base_urls, FUN = safe.candidate.scraper,
                 api_link = "http://www.sverdlovsk.vybory.izbirkom.ru/",
                 encoding = "windows-1251")
 
