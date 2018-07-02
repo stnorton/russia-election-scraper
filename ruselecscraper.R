@@ -291,7 +291,7 @@ file.name.generating <- function(filename){
 
 
 candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encoding
-
+  
   #safety check
   library(rvest)
   stopifnot(is.character(base_link))
@@ -313,6 +313,9 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
   if(nchar(name) > 68){
     name <- substring(name, first = 1, last = 68)
   }
+  
+  name <- gsub("[[:punct:]]", " ", name)
+  name <- trimws(name, which = "right")
   
   name <- paste("candidates", name, sep = " ")
   
@@ -340,3 +343,5 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
 }
 
 safe.candidate.scraper <- Safely(candidate.scraper)
+
+
