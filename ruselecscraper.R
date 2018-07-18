@@ -4,9 +4,6 @@
 ##The links themselves can be scraped using RSelenium
 
 ##base_link refers to the link to the specific election that will be scraped
-##api_link is the root domain for the region being scraped
-##e.g. http://www.yaroslavl.vybory.izbirkom.ru/
-##THIS SHOULD END IN A SLASH
 
 ##All directories created will be created in your wd - if you want files saved
   ##to a specific folder, run the scraper in that folder
@@ -85,16 +82,14 @@ api.extracting <- function(links){
 }
 
 api.caller <- function(roots, vrns, tvds, vibids, type, global, region, sub_region,
-                       filenames, api_link){
+                       filenames){
   
-  stopifnot(is.character(filenames), is.character(type), is.character(api_link))
-  
-  api_url <- paste0(api_link, "servlet/ExcelReportVersion")
+  stopifnot(is.character(filenames), is.character(type))
   
   Sys.sleep(10)
   
   httr::GET(
-    url = api_url,
+    url = "http://izbirkom.ru/servlet/ExcelReportVersion",
     query = list(
       region = region,
       sub_region=sub_region,
@@ -147,7 +142,7 @@ dir.name.generating <- function(filename){
 }
 
 
-russian.election.scraping <- function(base_link, api_link, ...){
+russian.election.scraping <- function(base_link, ...){
   
   Sys.sleep(5)
   
@@ -202,8 +197,7 @@ russian.election.scraping <- function(base_link, api_link, ...){
                 global = api_variables$global,
                 region = api_variables$region,
                 sub_region = api_variables$sub_region,
-                filenames =  filenames,
-                api_link = api_link)
+                filenames =  filenames)
   
   
   return(res)
@@ -290,12 +284,11 @@ file.name.generating <- function(filename){
 
 
 
-candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encoding
+candidate.scraper <- function(base_link, ...){ ##... is to pass encoding
   
   #safety check
   library(rvest)
   stopifnot(is.character(base_link))
-  stopifnot(is.character(api_link))
   
   ##reading in page
   base_page <- read_html(base_link, ...)
@@ -337,8 +330,7 @@ candidate.scraper <- function(base_link, api_link, ...){ ##... is to pass encodi
                           global = api_variables$global,
                           region = api_variables$region,
                           sub_region = api_variables$sub_region,
-                          filenames = filename,
-                          api_link = api_link)
+                          filenames = filename)
   
 }
 

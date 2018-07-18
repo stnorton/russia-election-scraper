@@ -1,13 +1,13 @@
 ﻿# russia-election-scraper
 Scraper for Russian election data at the poll level
 
-Last update: 25 June 2018
+Last update: 18 July 2018
 
 This scraper is designed to pull Russian election data at the poll level from any Russian regional election commission website.
 
 The functions for scraping are in the file "ruselecscraper.R"
 
-The file "yekatarinburgscrape.R" is an example of this scraper in use.
+The file "yekatarinburgscrape.R" is an example of this scraper in use. Note that this is based on an earlier version of the scraper, and there is no longer any need to provide an `api_link` argument.
 
 Please feel free to use this code, but I take no responsibility for your use of it and provide no guarantee that it will work. 
 Feel free to submit bug fixes/improvements as well.
