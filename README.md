@@ -1,7 +1,7 @@
-﻿# russia-election-scraper
+# russia-election-scraper
 Scraper for Russian election data at the poll level
 
-Last update: 18 July 2018
+Last update: 5 September 2018
 
 This scraper is designed to pull Russian election data at the poll level from any Russian regional election commission website.
 
@@ -21,7 +21,8 @@ The basic work flow for scraping is as follows:
 4. Remove problematic elections from list of links, scrape them seperately if desired (see example code).
 	* I reccomend using lapply() with the safe scraping functions - if the scraping fails, it will reutrn a null list entry corresponding to the index for the link at which it failed
 5. If candidate data is desired, use the candidate scraper
-6. Clean data and analyze away!
+6. There is a beta turnout scraping function; turnout is not avaiable for all elections (seems to be available for all federal elections) and I have not yet written an error handler to skip elections for which turnout is unavailable (9/5/18) 
+7. Clean data and analyze away!
 
 # Problems with Certain Elections
 
@@ -36,7 +37,7 @@ See the example code for a work-around for Duma 2003 elections. Code can easily 
 
 # Crediting the Author
 
-No citation is necessary for use of the scraper (though you are free to cite me if you wish!). I would appreciate an acknowledgement.
+I would appreciate a citation or acknowledgement if this scraper is used to produce any published work.
 
 Contact details:
 * Sean Norton
@@ -45,9 +46,10 @@ Contact details:
 
 # Reporting bugs, suggesting improvements, etc.
 
-Please report any bugs and suggested fixes in the "Issues" tab. Feel free to clone the repo and make improvements. I would appreciate it if you contacted me with any signficant improvements, as I use this scraper very frequently!
+Please report any bugs and suggested fixes in the "Issues" tab. Feel free to clone the repo and make improvements. Please contact me with any significant improvements, as I would like to update the scraper.
 
-# Known bugs
+# Known bugs (as of 9/5/2018)
 
 * When a `vibid` isn't present in a url, the function `api.extracting` returns the entire url. I am working on a way to recognize this and drop vibid from the result.
-* When there is no data for an election, the scraper cannot recognize this and crashes when it reaches the `api.caller` function 
+* When there is no data for an election, the scraper cannot recognize this and crashes when it reaches the `api.caller` function.
+* `httr::GET()` very occassionally fails to load all the functions associated with `GET()`, namely `verbose()`. This appears to be a bug with R that may not be fixable from my end.  `library(httr)` would resolve the issue. I do not use this in my code becuase it creates conflicts with other packages that I use.

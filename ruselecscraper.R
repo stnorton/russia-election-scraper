@@ -3,7 +3,6 @@
 #links to the election results
 ##The links themselves can be scraped using RSelenium
 
-##base_link refers to the link to the specific election that will be scraped
 
 ##All directories created will be created in your wd - if you want files saved
   ##to a specific folder, run the scraper in that folder
@@ -337,3 +336,93 @@ candidate.scraper <- function(base_link, ...){ ##... is to pass encoding
 safe.candidate.scraper <- Safely(candidate.scraper)
 
 
+##TURNOUT DATA------------------------------------------------------------------
+
+#this can be taken from the main page of results - no need for recursion!
+
+#pull link based on text - unfortunately xpath queries don't work due 
+# to character encoding issues
+# this uses the link text and grep to pull the index of the node
+
+index.xpath.extracting <- function(xpath, base_page){
+  
+  res <- base_page %>%
+    html_node(xpath = xpath) %>%
+    html_attr("href")
+  
+  return(res)
+}
+
+index.turnlink.extracting <- function(base_page, ...){
+  
+  text <- base_page %>%
+    html_nodes("a") %>%
+    html_text()
+  
+  index <- grep(text, pattern = "избирателей в выборах")
+  
+  #safety check for multiple results
+  stopifnot(length(index) == 1)
+  
+  xpath <- paste0("(//a)", "[", index, "]")
+  
+  res <- index.xpath.extracting(xpath = xpath, base_page = base_page)
+  
+  return(res)
+  
+}
+
+
+
+turnout.scraper <- function(base_link, ...){
+  
+  browser()
+  
+  require(rvest) #safety check
+  
+  #reading in base page, creating names
+  base_page <- read_html(base_link, ...)
+  
+  name <- base_page %>%
+    html_node(css = ".w2 .headers") %>%
+    html_text()
+  
+  if(name == "Сведения о выборах"){
+    name <- base_page %>%
+      html_node(css = ".w2:nth-child(2) b") %>%
+      html_text()
+  }
+  
+  if(nchar(name) > 68){
+    name <- substring(name, first = 1, last = 68)
+  }
+  
+  name <- gsub("[[:punct:]]", " ", name)
+  name <- trimws(name, which = "right")
+  
+  name <- paste("turnout", name, sep = " ")
+  
+  name <- file.name.generating(name)
+  
+  filename <- paste0(name, ".xls")
+  
+  #extracting link
+  turn_link <- index.turnlink.extracting(base_page, ...)
+  
+  #extracting api vars
+  api_variables <- api.extracting(turn_link)
+  
+  #call
+  check <- api.caller(roots = api_variables$roots,
+                           vrns = api_variables$vrns,
+                           tvds = api_variables$tvds,
+                           vibids = api_variables$vibids,
+                           type = api_variables$types,
+                           global = api_variables$global,
+                           region = api_variables$region,
+                           sub_region = api_variables$sub_region,
+                           filenames = filename)
+  
+  
+}
+safe.turnout.scraper <- Safely(turnout.scraper)
