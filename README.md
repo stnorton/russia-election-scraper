@@ -1,9 +1,9 @@
-# russia-election-scraper
+﻿# russia-election-scraper
 Scraper for Russian election data at the poll level
 
-Last update: 5 September 2018
+Last update: 13 September 2018
 
-This scraper is designed to pull Russian election data at the poll level from any Russian regional election commission website.
+This scraper is designed to pull Russian election data at the poll level from any Russian regional election commission website. It is still under active development, with the end goal being an R package.
 
 The functions for scraping are in the file "ruselecscraper.R"
 
@@ -17,23 +17,21 @@ Feel free to submit bug fixes/improvements as well.
 The basic work flow for scraping is as follows:
 1. Ensure R locale is configured for Russian if you are using windows.
 2. Use RSelenium (or rvest in session mode) to navigate the search boxes on the site and pull the links to the desired election. See example code to see this in action.
-3. Determine if any election pages are idiosyncratically formatted (see Problems with Certain Elections)
+3. Pull out mixed elections - these will need to be scraped with seperate functions.
 4. Remove problematic elections from list of links, scrape them seperately if desired (see example code).
 	* I reccomend using lapply() with the safe scraping functions - if the scraping fails, it will reutrn a null list entry corresponding to the index for the link at which it failed
 5. If candidate data is desired, use the candidate scraper
 6. There is a beta turnout scraping function; turnout is not avaiable for all elections (seems to be available for all federal elections) and I have not yet written an error handler to skip elections for which turnout is unavailable (9/5/18) 
 7. Clean data and analyze away!
 
-# Problems with Certain Elections
+# Mixed elections
+*NB: This is still in beta. Due to idiosyncratic formatting, this code is very buggy (as of 9/13) and will likely require modification on your end.*
+The suite of functions includes a function called `mixed.election.scraping`.
+This function will scrape mixed elections, and create a folder structure that seperates the majoritarian and party vote.
+Majority vote will be in a folder named `majvote` and party list vote in `partyvote`.
 
-Unfortunately, the Russian Central Election Commission does not standardize how the regions present results.
-The code can handle some of these issues so long as there is only one set of results for each district. 
-However, there are still issues with certain types of elections:
-* Any election with a mixed election system. The 2003 Federal Duma elections are a prominent example, but some city councils use this system as well.
-* Certain cities report mayoral elections directly at the precinct level. This is only an issue if you want to avoid having a seperate spreadsheet for each polling station.
-* Any election where the table of disaggregated results is not the last link on the page. This could mostly be worked around in a similar way to the Duma elections by telling the scraper to pull links with the text "Сводная таблица", but some elections use different texts. I am currently attempting to find a way to work around this.
-See the example code for a work-around for Duma 2003 elections. Code can easily be modified to select different nodes if the formatting is idiosyncratic.
-* Occassionally, API calls do not use all the variables specified in the URL. If you run into consistent issues, use Burp Suite to determine the call
+
+
 
 # Crediting the Author
 

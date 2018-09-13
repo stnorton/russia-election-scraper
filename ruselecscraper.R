@@ -426,3 +426,112 @@ turnout.scraper <- function(base_link, ...){
   
 }
 safe.turnout.scraper <- Safely(turnout.scraper)
+
+
+##MIXED ELECTIONS---------------------------------------------------------------
+##rewriting scraper function to work for these elecctions
+# this is taken from nizhnyscrape.R
+
+#modifying scraper to deal with this
+
+index.result.extracting <- function(link, ...){
+  
+  link <- read_html(link, ...)
+  text <- link %>%
+    html_nodes("a") %>%
+    html_text()
+  
+  indices <- grep(text, pattern = "Сводная таблица")
+  
+  xpaths <- sapply(indices,  function (x) paste0("(//a)", "[", x, "]"))
+  
+  res <- sapply(X = xpaths, FUN = index.xpath.extracting, link = link)
+  
+  return(res)
+  
+}
+
+index.xpath.extracting <- function(xpath, link){
+  
+  res <- link %>%
+    html_node(xpath = xpath) %>%
+    html_attr("href")
+  
+  return(res)
+}
+
+mixed.election.scraping <- function(base_link, ...){
+  
+  ##check for package dependency
+  library(rvest)
+  
+  #getting name for folder/reading in link
+  base_page <- read_html(base_link, ...)
+  
+  name <- base_page %>%
+    html_node(css = ".w2 .headers") %>%
+    html_text()
+  
+  if(name == "Сведения о выборах"){
+    name <- base_page %>%
+      html_node(css = ".w2:nth-child(2) b") %>%
+      html_text()
+  }
+  
+  
+  name <- dir.name.generating(name)
+  
+  dir.create(path = name)
+  
+  #extracting links to districts
+  
+  dist_links <- dist.link.extracting(base_link)
+  
+  result_links <- unlist(sapply(X = dist_links, FUN = index.result.extracting,
+                                ...))
+  
+  majvote_links <- result_links[c(TRUE, FALSE)]
+  partyvote_links <- result_links[c(FALSE, TRUE)]
+  
+  #extracting api variables from results
+  maj_api_variables <- api.extracting(majvote_links)
+  party_api_variables <- api.extracting(partyvote_links)
+  
+  #creating subdirectories
+  maj_dir_name <- paste0("./", name, "/", "majvote")
+  dir.create(maj_dir_name)
+  
+  party_dir_name <- paste0("./", name,"/", "partyvote")
+  dir.create(party_dir_name)
+  
+  #creating filenames
+  numbers <- 1: length(majvote_links)
+  maj_filenames <- paste0("./", name, "/majvote/", "result", numbers, ".xls")
+  party_filenames <- paste0("./", name, "/partyvote/", "result", numbers, ".xls")
+  
+  #running the api call
+  
+  res <- mapply(api.caller, roots = maj_api_variables$roots,
+                vrns = maj_api_variables$vrns,
+                tvds = maj_api_variables$tvds,
+                vibids = maj_api_variables$vibids,
+                type = maj_api_variables$types,
+                global = maj_api_variables$global,
+                region = maj_api_variables$region,
+                sub_region = maj_api_variables$sub_region,
+                filenames =  maj_filenames)
+  
+  res2 <- mapply(api.caller, roots = party_api_variables$roots,
+                 vrns = party_api_variables$vrns,
+                 tvds = party_api_variables$tvds,
+                 vibids = party_api_variables$vibids,
+                 type = party_api_variables$types,
+                 global = party_api_variables$global,
+                 region = party_api_variables$region,
+                 sub_region = party_api_variables$sub_region,
+                 filenames =  party_filenames)
+  
+  
+  return(list(res, res2))
+  
+}
